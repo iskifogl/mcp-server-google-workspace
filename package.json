@@ -1,0 +1,49 @@
+{
+  "name": "mcp-server-google-workspace",
+  "version": "0.1.1",
+  "description": "MCP server for Google Workspace integration (Gmail, Calendar, Drive) with flexible authentication",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "mcp-server-google-workspace": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsc && node dist/index.js",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "google-workspace",
+    "gmail",
+    "google-calendar",
+    "google-drive",
+    "anthropic",
+    "claude"
+  ],
+  "author": "iskifogl",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iskifogl/mcp-server-google-workspace"
+  },
+  "homepage": "https://github.com/iskifogl/mcp-server-google-workspace#readme",
+  "bugs": {
+    "url": "https://github.com/iskifogl/mcp-server-google-workspace/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "googleapis": "^164.1.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
