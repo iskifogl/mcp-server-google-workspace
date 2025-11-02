@@ -13,8 +13,10 @@ import { GoogleApiService } from './services/google-api.service.js';
 import { listEmails } from './tools/gmail/list-emails.js';
 import { readEmail } from './tools/gmail/read-email.js';
 import { searchEmails } from './tools/gmail/search-emails.js';
+import { sendEmail } from './tools/gmail/send-email.js';
 import { listEvents } from './tools/calendar/list-events.js';
 import { createEvent } from './tools/calendar/create-event.js';
+import { getUserEmail } from './tools/user/get-email.js';
 
 // Load environment variables
 config();
@@ -97,6 +99,44 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
+        name: 'gmail_send_email',
+        description: 'Send an email via Gmail with subject, body, and recipients',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            to: {
+              type: ['string', 'array'],
+              description: 'Recipient email address(es). Can be a single email or array of emails. Use "me" to send to yourself.',
+              items: { type: 'string' },
+            },
+            subject: {
+              type: 'string',
+              description: 'Email subject line',
+            },
+            body: {
+              type: 'string',
+              description: 'Email body content (plain text or HTML)',
+            },
+            cc: {
+              type: ['string', 'array'],
+              description: 'CC recipient(s) (optional)',
+              items: { type: 'string' },
+            },
+            bcc: {
+              type: ['string', 'array'],
+              description: 'BCC recipient(s) (optional)',
+              items: { type: 'string' },
+            },
+            isHtml: {
+              type: 'boolean',
+              description: 'Whether the body is HTML formatted (default: false)',
+              default: false,
+            },
+          },
+          required: ['to', 'subject', 'body'],
+        },
+      },
+      {
         name: 'calendar_list_events',
         description: 'List calendar events for a specific date range',
         inputSchema: {
@@ -154,6 +194,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ['summary', 'start', 'end'],
         },
       },
+      {
+        name: 'get_user_email',
+        description: 'Get the authenticated user\'s email address',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
     ],
   };
 });
@@ -197,6 +245,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      case 'gmail_send_email': {
+        const result = await sendEmail(googleApi, request.params.arguments as any);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
       case 'calendar_list_events': {
         const result = await listEvents(googleApi, request.params.arguments as any);
         return {
@@ -211,6 +271,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'calendar_create_event': {
         const result = await createEvent(googleApi, request.params.arguments as any);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_user_email': {
+        const result = await getUserEmail();
         return {
           content: [
             {
