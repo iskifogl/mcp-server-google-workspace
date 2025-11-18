@@ -2,6 +2,7 @@ import { GoogleApiService } from '../../services/google-api.service.js';
 import { CalendarEvent } from '../../types/google.types.js';
 
 export interface ListEventsArgs {
+  calendarId?: string; // Calendar ID (default: 'primary')
   date?: string; // ISO date string (YYYY-MM-DD)
   days?: number; // Number of days from date (default: 1)
   maxResults?: number;
@@ -15,6 +16,7 @@ export async function listEvents(
   args: ListEventsArgs
 ): Promise<CalendarEvent[]> {
   const {
+    calendarId = 'primary',
     date,
     days = 1,
     maxResults = 50
@@ -39,7 +41,7 @@ export async function listEvents(
   }
 
   const response = await calendar.events.list({
-    calendarId: 'primary',
+    calendarId,
     timeMin: timeMin.toISOString(),
     timeMax: timeMax.toISOString(),
     maxResults,

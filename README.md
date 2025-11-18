@@ -7,11 +7,12 @@ A Model Context Protocol (MCP) server for Google Workspace integration, providin
 ## Features
 
 - 🔐 **Simple Authentication**: Environment variable based credentials
-- 📧 **Gmail**: List, read, search emails
-- 📅 **Calendar**: List and create events
+- 📧 **Gmail**: List, read, search, and send emails
+- 📅 **Calendar**: List calendars (including shared), list and create events in any accessible calendar
 - 📁 **Drive**: File management (coming soon)
 - 🔄 **Auto Token Refresh**: Automatic OAuth token refresh
 - 🏢 **Multi-User Support**: Host applications can decrypt and inject user-specific credentials
+- 🤝 **Shared Calendar Support**: Access and manage events in calendars shared with you
 
 ## Installation
 
@@ -94,10 +95,29 @@ Search emails with Gmail query syntax.
 
 ### Calendar Tools
 
+#### `calendar_list_calendars`
+List all accessible calendars, including shared calendars.
+
+**Parameters:**
+- `showHidden` (boolean, optional): Include hidden calendars (default: false)
+- `minAccessRole` (string, optional): Minimum access role filter (freeBusyReader, reader, writer, owner)
+
+**Example:**
+```json
+{
+  "showHidden": false,
+  "minAccessRole": "reader"
+}
+```
+
+**Response:**
+Returns a list of calendars with their IDs, names, access roles, and other metadata. Use the calendar `id` field for other calendar operations.
+
 #### `calendar_list_events`
 List calendar events for a date range.
 
 **Parameters:**
+- `calendarId` (string, optional): Calendar ID (default: 'primary'). Use `calendar_list_calendars` to get IDs of shared calendars.
 - `date` (string, optional): Start date (YYYY-MM-DD), default: today
 - `days` (number, optional): Number of days (default: 1)
 - `maxResults` (number, optional): Max events (default: 50)
@@ -106,6 +126,7 @@ List calendar events for a date range.
 Create a new calendar event.
 
 **Parameters:**
+- `calendarId` (string, optional): Calendar ID (default: 'primary'). Use `calendar_list_calendars` to get IDs of shared calendars.
 - `summary` (string, required): Event title
 - `start` (string, required): Start time (ISO 8601)
 - `end` (string, required): End time (ISO 8601)
@@ -116,6 +137,7 @@ Create a new calendar event.
 **Example:**
 ```json
 {
+  "calendarId": "primary",
   "summary": "Team Meeting",
   "start": "2025-11-02T10:00:00Z",
   "end": "2025-11-02T11:00:00Z",

@@ -16,6 +16,17 @@ export interface EmailData {
   labels: string[];
 }
 
+export interface CalendarInfo {
+  id: string;
+  summary: string;
+  description?: string;
+  primary?: boolean;
+  accessRole: string;
+  backgroundColor?: string;
+  foregroundColor?: string;
+  timeZone?: string;
+}
+
 export interface CalendarEvent {
   id: string;
   summary: string;

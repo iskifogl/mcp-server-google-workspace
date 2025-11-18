@@ -14,6 +14,7 @@ import { listEmails } from './tools/gmail/list-emails.js';
 import { readEmail } from './tools/gmail/read-email.js';
 import { searchEmails } from './tools/gmail/search-emails.js';
 import { sendEmail } from './tools/gmail/send-email.js';
+import { listCalendars } from './tools/calendar/list-calendars.js';
 import { listEvents } from './tools/calendar/list-events.js';
 import { createEvent } from './tools/calendar/create-event.js';
 import { getUserEmail } from './tools/user/get-email.js';
@@ -137,11 +138,35 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
-        name: 'calendar_list_events',
-        description: 'List calendar events for a specific date range',
+        name: 'calendar_list_calendars',
+        description: 'List all accessible calendars including shared calendars. Use this to get calendar IDs for other calendar operations.',
         inputSchema: {
           type: 'object',
           properties: {
+            showHidden: {
+              type: 'boolean',
+              description: 'Include hidden calendars (default: false)',
+              default: false,
+            },
+            minAccessRole: {
+              type: 'string',
+              description: 'Minimum access role filter (freeBusyReader, reader, writer, owner)',
+              enum: ['freeBusyReader', 'reader', 'writer', 'owner'],
+            },
+          },
+        },
+      },
+      {
+        name: 'calendar_list_events',
+        description: 'List calendar events for a specific date range. Can list events from any accessible calendar.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            calendarId: {
+              type: 'string',
+              description: 'Calendar ID (default: "primary" for your main calendar). Use calendar_list_calendars to get IDs of shared calendars.',
+              default: 'primary',
+            },
             date: {
               type: 'string',
               description: 'Start date in YYYY-MM-DD format (default: today)',
@@ -161,10 +186,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'calendar_create_event',
-        description: 'Create a new calendar event with title, time, and optional details',
+        description: 'Create a new calendar event with title, time, and optional details. Can create events in any writable calendar.',
         inputSchema: {
           type: 'object',
           properties: {
+            calendarId: {
+              type: 'string',
+              description: 'Calendar ID (default: "primary" for your main calendar). Use calendar_list_calendars to get IDs of shared calendars.',
+              default: 'primary',
+            },
             summary: {
               type: 'string',
               description: 'Event title/summary',
@@ -247,6 +277,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'gmail_send_email': {
         const result = await sendEmail(googleApi, request.params.arguments as any);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'calendar_list_calendars': {
+        const result = await listCalendars(googleApi, request.params.arguments as any);
         return {
           content: [
             {

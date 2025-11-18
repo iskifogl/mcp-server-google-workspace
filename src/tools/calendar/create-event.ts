@@ -2,6 +2,7 @@ import { GoogleApiService } from '../../services/google-api.service.js';
 import { CalendarEvent } from '../../types/google.types.js';
 
 export interface CreateEventArgs {
+  calendarId?: string; // Calendar ID (default: 'primary')
   summary: string;
   start: string; // ISO 8601 datetime
   end: string; // ISO 8601 datetime
@@ -18,6 +19,7 @@ export async function createEvent(
   args: CreateEventArgs
 ): Promise<CalendarEvent> {
   const {
+    calendarId = 'primary',
     summary,
     start,
     end,
@@ -44,7 +46,7 @@ export async function createEvent(
   };
 
   const response = await calendar.events.insert({
-    calendarId: 'primary',
+    calendarId,
     requestBody: event,
   });
 
