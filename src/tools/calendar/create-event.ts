@@ -6,6 +6,7 @@ export interface CreateEventArgs {
   summary: string;
   start: string; // ISO 8601 datetime
   end: string; // ISO 8601 datetime
+  timeZone?: string; // IANA timezone (e.g., 'America/New_York', 'UTC'). If not specified, uses the calendar's default timezone
   description?: string;
   location?: string;
   attendees?: string[]; // Array of email addresses
@@ -23,6 +24,7 @@ export async function createEvent(
     summary,
     start,
     end,
+    timeZone,
     description,
     location,
     attendees
@@ -36,11 +38,11 @@ export async function createEvent(
     location,
     start: {
       dateTime: start,
-      timeZone: 'UTC',
+      ...(timeZone && { timeZone }),
     },
     end: {
       dateTime: end,
-      timeZone: 'UTC',
+      ...(timeZone && { timeZone }),
     },
     attendees: attendees?.map(email => ({ email })),
   };
@@ -58,6 +60,8 @@ export async function createEvent(
     description: createdEvent.description || description,
     start: createdEvent.start?.dateTime || start,
     end: createdEvent.end?.dateTime || end,
+    startTimeZone: createdEvent.start?.timeZone || undefined,
+    endTimeZone: createdEvent.end?.timeZone || undefined,
     location: createdEvent.location || location,
     attendees: createdEvent.attendees?.map(a => a.email!).filter(Boolean),
     status: createdEvent.status || 'confirmed',

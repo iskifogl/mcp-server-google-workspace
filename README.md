@@ -114,7 +114,7 @@ List all accessible calendars, including shared calendars.
 Returns a list of calendars with their IDs, names, access roles, and other metadata. Use the calendar `id` field for other calendar operations.
 
 #### `calendar_list_events`
-List calendar events for a date range.
+List calendar events for a date range. Returns events with timezone information.
 
 **Parameters:**
 - `calendarId` (string, optional): Calendar ID (default: 'primary'). Use `calendar_list_calendars` to get IDs of shared calendars.
@@ -122,27 +122,43 @@ List calendar events for a date range.
 - `days` (number, optional): Number of days (default: 1)
 - `maxResults` (number, optional): Max events (default: 50)
 
+**Response:**
+Each event includes `startTimeZone` and `endTimeZone` fields, making it easy to handle events across different timezones (e.g., ET vs UTC).
+
 #### `calendar_create_event`
-Create a new calendar event.
+Create a new calendar event with proper timezone support.
 
 **Parameters:**
 - `calendarId` (string, optional): Calendar ID (default: 'primary'). Use `calendar_list_calendars` to get IDs of shared calendars.
 - `summary` (string, required): Event title
 - `start` (string, required): Start time (ISO 8601)
 - `end` (string, required): End time (ISO 8601)
+- `timeZone` (string, optional): IANA timezone (e.g., "America/New_York", "America/Los_Angeles", "UTC"). If not specified, uses the calendar's default timezone.
 - `description` (string, optional): Event description
 - `location` (string, optional): Event location
 - `attendees` (array, optional): Attendee emails
 
-**Example:**
+**Examples:**
+
+Creating event in EST timezone:
 ```json
 {
   "calendarId": "primary",
   "summary": "Team Meeting",
-  "start": "2025-11-02T10:00:00Z",
-  "end": "2025-11-02T11:00:00Z",
+  "start": "2025-11-02T10:00:00",
+  "end": "2025-11-02T11:00:00",
+  "timeZone": "America/New_York",
   "description": "Quarterly review",
   "attendees": ["team@company.com"]
+}
+```
+
+Creating event in UTC (default if not specified):
+```json
+{
+  "summary": "Team Meeting",
+  "start": "2025-11-02T15:00:00Z",
+  "end": "2025-11-02T16:00:00Z"
 }
 ```
 

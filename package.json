@@ -1,6 +1,6 @@
 {
   "name": "mcp-server-google-workspace",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "MCP server for Google Workspace integration (Gmail, Calendar, Drive) with flexible authentication",
   "main": "dist/index.js",
   "type": "module",

@@ -158,7 +158,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'calendar_list_events',
-        description: 'List calendar events for a specific date range. Can list events from any accessible calendar.',
+        description: 'List calendar events for a specific date range. Can list events from any accessible calendar. Returns event times with their timezone information.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -206,6 +206,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             end: {
               type: 'string',
               description: 'End time in ISO 8601 format (e.g., "2025-11-02T11:00:00Z")',
+            },
+            timeZone: {
+              type: 'string',
+              description: 'IANA timezone (e.g., "America/New_York", "America/Los_Angeles", "Europe/London", "UTC"). If not specified, uses the calendar\'s default timezone.',
             },
             description: {
               type: 'string',

@@ -57,6 +57,8 @@ export async function listEvents(
     description: event.description || undefined,
     start: event.start?.dateTime || event.start?.date || '',
     end: event.end?.dateTime || event.end?.date || '',
+    startTimeZone: event.start?.timeZone || undefined,
+    endTimeZone: event.end?.timeZone || undefined,
     location: event.location || undefined,
     attendees: event.attendees?.map(a => a.email!).filter(Boolean) || undefined,
     status: event.status || 'confirmed',

@@ -33,6 +33,8 @@ export interface CalendarEvent {
   description?: string;
   start: string;
   end: string;
+  startTimeZone?: string;
+  endTimeZone?: string;
   location?: string;
   attendees?: string[];
   status: string;
